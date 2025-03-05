@@ -14,7 +14,7 @@
 .type nameStr,%gnu_unique_object
     
 /*** STUDENTS: Change the next line to your name!  **/
-nameStr: .asciz "Inigo Montoya"  
+nameStr: .asciz "Edward Guerra Ramirez"  
 
 .align   /* realign so that next mem allocations are on word boundaries */
  
@@ -81,6 +81,48 @@ asmFunc:
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
 
+  /* Copys the input values from registers to memory */
+    LDR r2, =dividend
+    STR r0, [r2]
+    LDR r3, =divisor
+    STR r1, [r3]
+
+    /* Initializes the quotient and mods to 0 */
+    LDR r4, =quotient
+    MOV r5, #0
+    STR r5, [r4]
+    LDR r6, =mod
+    STR r5, [r6]
+
+    /* Checks for error conditions if either dividend or divisor is 0 */
+    CMP r0, #0
+    BEQ error
+    CMP r1, #0
+    BEQ error
+
+    /* Performs division using standard unsigned division */
+    UDIV r7, r0, r1  /* r7 = dividend / divisor */
+    MLS r8, r7, r1, r0 /* r8 = dividend - (quotient * divisor), remainder */
+
+    /* Stores the results */
+    STR r7, [r4]  /* Store quotient */
+    STR r8, [r6]  /* Store modulus */
+
+    /* Sets "we_have_a_problem" to 0 */
+    LDR r9, =we_have_a_problem
+    STR r5, [r9]
+
+    /* Returns the address of quotient */
+    LDR r0, =quotient
+    B done
+
+error:
+    LDR r9, =we_have_a_problem
+    MOV r10, #1
+    STR r10, [r9]   /* Sets "we_have_a_problem" to 1 */
+
+    /* Returns the address of quotient */
+    LDR r0, =quotient
     
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
 
